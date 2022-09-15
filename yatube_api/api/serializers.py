@@ -27,6 +27,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Comment
 
+
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         default=serializers.CurrentUserDefault(), slug_field='username',
@@ -42,12 +43,11 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Follow
         validators = [
-        validators.UniqueTogetherValidator(
-            queryset=Follow.objects.all(),
-            fields=('user', 'following')
-        )
-    ]
-    
+            validators.UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('user', 'following'))
+        ]
+
     def validate(self, data):
         if data['user'] == data['following']:
             raise serializers.ValidationError(

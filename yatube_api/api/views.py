@@ -31,27 +31,25 @@ class CommentViewSet(viewsets.ModelViewSet):
         post = get_object_or_404(Post, pk=post_id)
         queryset = post.comments.all()
         return queryset
-    
+
     def perform_create(self, serializer):
         post_id = self.kwargs.get('post_id')
         post = get_object_or_404(Post, pk=post_id)
         serializer.save(author=self.request.user, post=post)
 
 
-class FollowViewSet(
-    mixins.ListModelMixin, mixins.CreateModelMixin,
-    viewsets.GenericViewSet):
+class FollowViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                    viewsets.GenericViewSet):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('following__username',)
 
-
     def get_queryset(self):
         user = self.request.user
         followers = user.follower.all()
         return followers
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
